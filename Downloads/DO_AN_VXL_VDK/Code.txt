@@ -34,33 +34,43 @@ ORG 30H
 ;DS = P2.1
 ;SH_CP = P2.0
 ;========TIMER 0=========
-Timer_0: ;thoi gian dem: 128ms
-MOV TMOD, #01h
-MOV TL0, LOW(-500)
-MOV TH0, HIGH(-500)
+Timer_0: ;thoi gian dem: 10ms
+MOV TMOD, #11h
+MOV TL0, #LOW(-10000)
+MOV TH0, #HIGH(-10000)
 SETB TR0
 JNB TF0, $
 CLR TF0
 CLR TR0
 RET
 ;========================
+Timer_1: ;thoi gian dem: 10ms
+MOV TMOD, #11h
+MOV TL1, #LOW(-10000)
+MOV TH1, #HIGH(-10000)
+SETB TR1
+JNB TF1, $
+CLR TF1
+CLR TR1
+RET
+;========================
 Delay:
-      JB IE.6,Delay_slow
-      MOV R5, #1 ;thoi gian: 128ms
+      JB P1.7,Delay_slow
+      MOV R5, #10 ;thoi gian: 100ms
       JMP Looptimer
    Delay_slow:
-      MOV R5,#5 ;thoi gian: 640ms
+      MOV R5,#50 ;thoi gian: 500ms
       Looptimer:
       Call Timer_0
       DJNZ R5, Looptimer
 RET
       
 Delay1:
-      JB IE.6,Delay1_slow
-      MOV R5, #3 ;thoi gian: 384ms
+      JB P1.7,Delay1_slow
+      MOV R5, #25 ;thoi gian: 250ms
       JMP Looptimer1
    Delay1_slow:
-      MOV R5,#15 ;thoi gian: 1920ms
+      MOV R5,#100 ;thoi gian: 1s
       Looptimer1:
       Call Timer_0
       DJNZ R5, Looptimer1
@@ -103,11 +113,11 @@ SETB P1.1
 RET
 ;========================
 SEND_BIT_P1B:
-CLR P1.4
+CLR P1.4				
 MOV R0, #8
 Sending_P1B:
 RLC A
-MOV P1.3, C
+MOV P1.3, C				;DS
 SETB P1.5
 CLR P1.5
 DJNZ R0, Sending_P1B
@@ -506,7 +516,7 @@ RET
 ;===============================================
 Eff_4:
       Call Reset_led
-      CJNE R2, #4, End_Eff_4
+      ;CJNE R2, #4, End_Eff_4
       MOV A, #0ffh
       Call SEND_BIT_P0A
 
@@ -558,7 +568,7 @@ Eff_4:
       MOV A, #0f0h
       Call SEND_BIT_P3B
       
-      CJNE R2, #4, End_Eff_4
+      ;CJNE R2, #4, End_Eff_4
       Call Delay1
       End_Eff_4:
 RET
@@ -789,7 +799,7 @@ RET
 ;========================
 Eff_8:
       Call Reset_led
-      CJNE R2, #8, End_Eff_8
+      ;CJNE R2, #8, End_Eff_8
       MOV A,#0ffh
       Call SEND_BIT_P0A
       MOV A,#0ffh
@@ -827,7 +837,7 @@ Eff_8:
       MOV A,#0f0h
       Call SEND_BIT_P3B
       
-      CJNE R2, #8, End_Eff_8
+      ;CJNE R2, #8, End_Eff_8
       Call Delay1
       
       End_Eff_8:
@@ -1039,14 +1049,26 @@ Reset_Led:
 RET
 ;========================
 
+Delay_Butt:
+   Call Timer_1
+   DJNZ R7, Delay_Butt
+ret
+
 Butt_1:
+MOV R7, #10
+Call Delay_Butt
+JB P3.2, end_Butt_1
 Call Reset_Led
 INC R2
+end_Butt_1:
 RETi
 
 Butt_2:
-CPL IE.6
-RETi
-      
+MOV R7, #10
+Call Delay_Butt
+JB P3.3, end_Butt_2
+CPL P1.7
+end_Butt_2:
+RETi  
 
 END
