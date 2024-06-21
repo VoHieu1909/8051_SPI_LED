@@ -516,7 +516,7 @@ RET
 ;===============================================
 Eff_4:
       Call Reset_led
-      ;CJNE R2, #4, End_Eff_4
+      CJNE R2, #4, End_Eff_4
       MOV A, #0ffh
       Call SEND_BIT_P0A
 
@@ -568,7 +568,7 @@ Eff_4:
       MOV A, #0f0h
       Call SEND_BIT_P3B
       
-      ;CJNE R2, #4, End_Eff_4
+      CJNE R2, #4, End_Eff_4
       Call Delay1
       End_Eff_4:
 RET
@@ -799,7 +799,7 @@ RET
 ;========================
 Eff_8:
       Call Reset_led
-      ;CJNE R2, #8, End_Eff_8
+      CJNE R2, #8, End_Eff_8
       MOV A,#0ffh
       Call SEND_BIT_P0A
       MOV A,#0ffh
@@ -837,7 +837,7 @@ Eff_8:
       MOV A,#0f0h
       Call SEND_BIT_P3B
       
-      ;CJNE R2, #8, End_Eff_8
+      CJNE R2, #8, End_Eff_8
       Call Delay1
       
       End_Eff_8:
